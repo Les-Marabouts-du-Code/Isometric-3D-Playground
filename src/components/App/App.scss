@@ -1,0 +1,57 @@
+$color1: #303030;
+$color2: #202020;
+
+/** GENERAL **/
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  min-height: 100%;
+}
+
+body {
+  background: $color1;
+  position: relative;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+/** Canvas **/
+#canvasContainer {
+  width: 100%;
+  position: relative;
+
+  &,
+  canvas {
+    height: 100%;
+  }
+  canvas {
+    background: $color2;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+}
+
+/** RESET **/
+button.switch-view {
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  position: absolute;
+  z-index: 9998;
+  border-radius: 3px;
+  padding: 0.5em;
+  color: white;
+  background: $color2;
+  font: {
+    size: 1em;
+    weight: bold;
+  }
+
+  &.inverted {
+    color: $color2;
+    background: white;
+  }
+}
