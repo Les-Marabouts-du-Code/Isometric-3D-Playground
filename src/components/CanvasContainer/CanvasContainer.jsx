@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { isMobile } from 'mobile-device-detect';
+import Visualizator from '../Visualizator/Visualizator';
 const Isometric3DGrid = require('../../lib/Isometric3DMap/isometric3dgrid')
   .default;
 const PIXI = require('pixi.js');
@@ -81,7 +82,10 @@ export default class CanvasContainer extends Component {
 
   render() {
     return (
-      <div id="canvasContainer" ref="canvasContainer" key={this.props.file} />
+      <>
+        <Visualizator />
+        <div id="canvasContainer" ref="canvasContainer" key={this.props.file} />
+      </>
     );
   }
 }
