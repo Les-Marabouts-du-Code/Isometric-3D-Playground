@@ -7,6 +7,9 @@ const PIXI = require('pixi.js');
 
 let app, isometric3DGrid;
 
+const CanvasContainer2 = props => {
+  return <Visualizator />;
+};
 export default class CanvasContainer extends Component {
   constructor(props) {
     super(props);

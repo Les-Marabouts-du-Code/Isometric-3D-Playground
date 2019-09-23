@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import Progress from '../Progress/Progress';
 import MapSelector from '../MapSelector/MapSelector';
 import CustomDialog from '../CustomDialog/CustomDialog';
+import Visualizator from '../Visualizator/Visualizator';
 
 const files = [
   {
@@ -83,11 +84,12 @@ export default function App(props: Props) {
           >
             &lt; Map
           </ButtonToMapSelector>
-          <CanvasContainer
+          <Visualizator />
+          {/* <CanvasContainer
             key={`mapData${activeFileIndex}`}
             file={files[activeFileIndex].file}
             data={mapData}
-          />
+          /> */}
         </>
       )}
     </>
