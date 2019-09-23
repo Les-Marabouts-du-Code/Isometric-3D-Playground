@@ -85,11 +85,6 @@ export default function App(props: Props) {
             &lt; Map
           </ButtonToMapSelector>
           <Visualizator />
-          {/* <CanvasContainer
-            key={`mapData${activeFileIndex}`}
-            file={files[activeFileIndex].file}
-            data={mapData}
-          /> */}
         </>
       )}
     </>

@@ -116,7 +116,7 @@ export default class Color {
     );
   }
 
-  public lighten(percentage: number = 0): Color {
+  public brighten(percentage: number = 0): Color {
     this.l *= percentage / 100 + 1;
     this.loadRGB();
     return this;

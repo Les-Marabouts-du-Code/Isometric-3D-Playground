@@ -9,6 +9,9 @@ export class Cube {
   private halfWidth: number;
   private halfDepth: number;
   private color: Color;
+  private topFace: Phaser.GameObjects.Polygon;
+  private leftFace: Phaser.GameObjects.Polygon;
+  private rightFace: Phaser.GameObjects.Polygon;
 
   constructor(
     _position: Phaser.Geom.Point,
@@ -20,6 +23,7 @@ export class Cube {
     this.position = _position;
 
     this.height = _height;
+    // this.height = 0;
     this.width = _width;
     this.halfWidth = this.width / 2;
     this.depth = (this.width * 2) / 4;
@@ -27,73 +31,95 @@ export class Cube {
 
     this.color = _color;
 
-    this.buildCube(scene);
+    this.topFace = this.getCubeTop(scene);
+    this.leftFace = this.getCubeLeftSide(scene);
+    this.rightFace = this.getCubeRightSide(scene);
+
+    scene.add.existing(this.topFace);
+    scene.add.existing(this.leftFace);
+    scene.add.existing(this.rightFace);
+
+    this.colorize(this.color);
   }
 
-  private buildCube(scene: Phaser.Scene): void {
-    const graphics = scene.add.graphics();
-
-    const cubeTop = this.getCubeTop();
-    graphics.fillStyle(this.color.toHex());
-    graphics.fillPoints(cubeTop.points, true);
-
-    const cubeLeftSide = this.getCubeLeftSide();
-    graphics.fillStyle(this.color.darken(30).toHex());
-    graphics.fillPoints(cubeLeftSide.points, true);
-
-    const cubeRightSide = this.getCubeRightSide();
-    graphics.fillStyle(this.color.darken(15).toHex());
-    graphics.fillPoints(cubeRightSide.points, true);
+  public getCubeSurface(): Phaser.GameObjects.Polygon {
+    return this.topFace;
   }
 
-  private getCubeLeftSide(): Phaser.Geom.Polygon {
-    return new Phaser.Geom.Polygon([
-      new Phaser.Geom.Point(this.position.x - this.halfWidth, this.position.y),
-      new Phaser.Geom.Point(
-        this.position.x - this.halfWidth,
-        this.position.y - this.height
-      ),
-      new Phaser.Geom.Point(
-        this.position.x,
-        this.position.y + this.halfDepth - this.height
-      ),
-      new Phaser.Geom.Point(this.position.x, this.position.y + this.halfDepth)
-    ]);
+  public getCubeFaceList(): Phaser.GameObjects.Polygon[] {
+    return [this.topFace, this.leftFace, this.rightFace];
   }
 
-  private getCubeRightSide(): Phaser.Geom.Polygon {
-    return new Phaser.Geom.Polygon([
-      new Phaser.Geom.Point(this.position.x + this.halfWidth, this.position.y),
-      new Phaser.Geom.Point(
-        this.position.x + this.halfWidth,
-        this.position.y - this.height
-      ),
-      new Phaser.Geom.Point(
-        this.position.x,
-        this.position.y + this.halfDepth - this.height
-      ),
-      new Phaser.Geom.Point(this.position.x, this.position.y + this.halfDepth)
-    ]);
+  private colorize(color: Color): void {
+    this.topFace.setFillStyle(color.toHex());
+    this.leftFace.setFillStyle(color.darken(30).toHex());
+    this.rightFace.setFillStyle(color.darken(15).toHex());
   }
 
-  private getCubeTop(): Phaser.Geom.Polygon {
-    return new Phaser.Geom.Polygon([
-      new Phaser.Geom.Point(
-        this.position.x - this.halfWidth,
-        this.position.y - this.height
-      ),
-      new Phaser.Geom.Point(
-        this.position.x,
-        this.position.y + this.halfDepth - this.height
-      ),
-      new Phaser.Geom.Point(
-        this.position.x + this.halfWidth,
-        this.position.y - this.height
-      ),
-      new Phaser.Geom.Point(
-        this.position.x,
-        this.position.y - this.halfDepth - this.height
-      )
-    ]);
+  public lighten(delta: number): void {
+    this.color.brighten(delta);
+  }
+
+  private getCubeLeftSide(scene: Phaser.Scene): Phaser.GameObjects.Polygon {
+    return new Phaser.GameObjects.Polygon(
+      scene,
+      this.position.x,
+      this.position.y,
+      [
+        [this.position.x - this.halfWidth, this.position.y],
+        [this.position.x - this.halfWidth, this.position.y - this.height],
+        [this.position.x, this.position.y + this.halfDepth - this.height],
+        [this.position.x, this.position.y + this.halfDepth]
+      ]
+    );
+  }
+
+  private getCubeRightSide(scene: Phaser.Scene): Phaser.GameObjects.Polygon {
+    return new Phaser.GameObjects.Polygon(
+      scene,
+      this.position.x,
+      this.position.y,
+      [
+        new Phaser.Geom.Point(
+          this.position.x + this.halfWidth,
+          this.position.y
+        ),
+        new Phaser.Geom.Point(
+          this.position.x + this.halfWidth,
+          this.position.y - this.height
+        ),
+        new Phaser.Geom.Point(
+          this.position.x,
+          this.position.y + this.halfDepth - this.height
+        ),
+        new Phaser.Geom.Point(this.position.x, this.position.y + this.halfDepth)
+      ]
+    );
+  }
+
+  private getCubeTop(scene: Phaser.Scene): Phaser.GameObjects.Polygon {
+    return new Phaser.GameObjects.Polygon(
+      scene,
+      this.position.x,
+      this.position.y,
+      [
+        new Phaser.Geom.Point(
+          this.position.x - this.halfWidth,
+          this.position.y - this.height
+        ),
+        new Phaser.Geom.Point(
+          this.position.x,
+          this.position.y + this.halfDepth - this.height
+        ),
+        new Phaser.Geom.Point(
+          this.position.x + this.halfWidth,
+          this.position.y - this.height
+        ),
+        new Phaser.Geom.Point(
+          this.position.x,
+          this.position.y - this.halfDepth - this.height
+        )
+      ]
+    );
   }
 }

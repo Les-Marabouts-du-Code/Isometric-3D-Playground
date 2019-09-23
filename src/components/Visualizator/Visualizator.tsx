@@ -5,8 +5,8 @@ import { HeightMapScene } from './lib/scenes/heightMapScene';
 const Visualizator = () => {
   const [vizualizatorEl, setVisualizatorElement] = useState('display-el');
   const [game, setGame] = useState<IsoGame>();
-  const [width, setWidth] = useState(800);
-  const [height, setheight] = useState(600);
+  const [width, setWidth] = useState(window.innerWidth);
+  const [height, setheight] = useState(window.innerHeight);
 
   useEffect(() => {
     setGame(
@@ -14,7 +14,13 @@ const Visualizator = () => {
         width,
         height,
         parent: vizualizatorEl,
-        scene: [HeightMapScene]
+        scene: [HeightMapScene],
+        input: {
+          keyboard: true,
+          mouse: true,
+          touch: false,
+          gamepad: true
+        }
       })
     );
   }, [width, height, vizualizatorEl]);

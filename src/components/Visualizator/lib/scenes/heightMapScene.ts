@@ -25,7 +25,15 @@ export class HeightMapScene extends Phaser.Scene {
   private lowColor: Color;
   private highColor: Color;
 
+  /**
+   * Cube Settings
+   */
   private cubeList: any[] = [];
+
+  /**
+   * Debug Settings
+   */
+  private debugLineList: Phaser.Geom.Line[];
 
   constructor(inputParams: IIsometric3DGridInputParams) {
     super({
@@ -35,6 +43,7 @@ export class HeightMapScene extends Phaser.Scene {
     // this.params = inputParams.params;
     this.lowColor = new Color(255, 255, 128);
     this.highColor = new Color(179, 179, 255);
+    this.debugLineList = [];
   }
 
   init(): void {
@@ -55,7 +64,7 @@ export class HeightMapScene extends Phaser.Scene {
     const width = 50;
     const minHeight = 0;
     const maxHeight = 60;
-    const offsetX = 500;
+    const offsetX = 300;
     const offsetY = 100;
     for (let y = 0; y < 10; y++) {
       for (let x = 0; x < 10; x++) {
@@ -65,16 +74,11 @@ export class HeightMapScene extends Phaser.Scene {
         const height = Math.random() * (maxHeight - minHeight) + minHeight;
         const t = (height - minHeight) / (maxHeight - minHeight);
         const color = this.lowColor.lerpTo(this.highColor, t);
-        const cube = new Cube(
-          new Phaser.Geom.Point(
-            (x - y) * halfWidth * 1.02 + offsetX,
-            (x + y) * halfDepth * 1.02 + offsetY
-          ),
-          height,
-          width,
-          color,
-          this
+        const position = new Phaser.Geom.Point(
+          (x - y) * halfWidth * 0.5 + offsetX,
+          (x + y) * halfDepth * 0.5 + offsetY
         );
+        const cube = new Cube(position, height, width, color, this);
         this.cubeList.push(cube);
       }
     }
@@ -82,5 +86,8 @@ export class HeightMapScene extends Phaser.Scene {
 
   update(time: number): void {
     // console.log(time);
+    const { x, y } = this.input.mousePointer;
+    // console.log(x, y);
+    // this.cubeList.forEach(cube => {});
   }
 }
