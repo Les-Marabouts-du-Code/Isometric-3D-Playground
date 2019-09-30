@@ -18,6 +18,15 @@ export class HeightMapScene extends Phaser.Scene {
    */
   private map: any;
   private params: any;
+  private width = 50;
+  private minHeight = 0;
+  private maxHeight = 60;
+  private size = 30;
+  private land: any[] = [];
+  private gridWidth = 100;
+  private gridHeight = 100;
+  private centerX = window.innerWidth / 4;
+  private centerY = -100;
 
   /**
    * Color Settings
@@ -26,6 +35,8 @@ export class HeightMapScene extends Phaser.Scene {
   private highColor: Color;
 
   private cubeList: any[] = [];
+
+  private cursors: any;
 
   constructor(inputParams: IIsometric3DGridInputParams) {
     super({
@@ -49,26 +60,19 @@ export class HeightMapScene extends Phaser.Scene {
     // this.map = {
     //   data: new MapDataToGrid(this.params.data)
     // };
+    this.cursors = this.input.keyboard.createCursorKeys();
   }
 
   create(): void {
-    const width = 50;
-    const minHeight = 0;
-    const maxHeight = 60;
-    const size = 30;
-    var land = [];
-    const gridWidth = 100;
-    const gridHeight = 100;
-    var centerX = window.innerWidth / 4;
-    var centerY = -100;
-    for (let y = 0; y < gridHeight; y++) {
+    for (let y = 0; y < this.gridHeight; y++) {
       let row = [];
-      for (let x = 0; x < gridWidth; x++) {
-        const depth = (width * 2) / 4;
+      for (let x = 0; x < this.gridWidth; x++) {
+        const depth = (this.width * 2) / 4;
         const halfDepth = depth / 2;
-        const halfWidth = width / 2;
-        const height = Math.random() * (maxHeight - minHeight) + minHeight;
-        const t = (height - minHeight) / (maxHeight - minHeight);
+        const halfWidth = this.width / 2;
+        const height =
+          Math.random() * (this.maxHeight - this.minHeight) + this.minHeight;
+        const t = (height - this.minHeight) / (this.maxHeight - this.minHeight);
         const color = this.lowColor.lerpTo(this.highColor, t);
         // const cube = new Cube(
         //   new Phaser.Geom.Point(
@@ -86,18 +90,25 @@ export class HeightMapScene extends Phaser.Scene {
         var tx = (x - y) * halfWidth * 0.5;
         var ty = (x + y) * halfDepth * 0.5;
 
-        var tile = this.add.isobox(
-          centerX + tx,
-          centerY + ty,
-          size,
+        // var tile = this.add.isobox(
+        //   this.centerX + tx,
+        //   this.centerY + ty,
+        //   this.size,
+        //   height,
+        //   color.toHex(),
+        //   color.darken(30).toHex(),
+        //   color.darken(15).toHex()
+        // );
+        let cube = new Cube(
+          new Phaser.Geom.Point(this.centerX + tx, this.centerY + ty),
           height,
-          color.toHex(),
-          color.darken(30).toHex(),
-          color.darken(15).toHex()
+          this.size,
+          color,
+          this
         );
-
-        tile.setDepth(centerY + ty);
-        tile
+        this.add.existing(cube);
+        cube.setDepth(this.centerY + ty);
+        cube
           .setInteractive()
           .on(
             'pointerdown',
@@ -105,12 +116,27 @@ export class HeightMapScene extends Phaser.Scene {
               console.log('click');
             }
           );
-        row.push(tile);
+        row.push(cube);
       }
-      land.push(row);
+      this.land.push(row);
     }
   }
 
+  move_camera_by_pointer(o_pointer: Phaser.Input.Pointer) {
+    if (!o_pointer.upTime) {
+      return;
+    }
+    if (o_pointer.isDown) {
+      if (this.cameras.main) {
+        this.cameras.main.x += this.cameras.main.x - o_pointer.position.x;
+        this.cameras.main.y += this.cameras.main.y - o_pointer.position.y;
+      }
+      // this.o_mcamera = o_pointer.position.clone();
+    }
+    if (o_pointer.primaryDown) {
+      // this.o_mcamera = null;
+    }
+  }
   update(time: number): void {
     // console.log(time);
   }
