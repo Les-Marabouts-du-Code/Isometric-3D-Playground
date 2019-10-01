@@ -1,23 +1,50 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import Phaser from 'phaser';
 import IsoGame from './lib/IsoGame';
 import { HeightMapScene } from './lib/scenes/heightMapScene';
 
 const Visualizator = () => {
+  const getWindowWidth = () => window.innerWidth;
+  const getWindowHeight = () => window.innerHeight;
+
   const [vizualizatorEl, setVisualizatorElement] = useState('display-el');
+  const [width, setWidth] = useState(getWindowWidth());
+  const [height, setHeight] = useState(getWindowHeight());
+
   const [game, setGame] = useState<IsoGame>();
-  const [width, setWidth] = useState(800);
-  const [height, setheight] = useState(600);
 
   useEffect(() => {
+    window.addEventListener('resize', handleResize);
     setGame(
       new IsoGame({
-        width,
-        height,
         parent: vizualizatorEl,
-        scene: [HeightMapScene]
+        scene: [HeightMapScene],
+        scale: {
+          parent: vizualizatorEl,
+          mode: Phaser.Scale.NONE,
+          width,
+          height
+        }
       })
     );
-  }, [width, height, vizualizatorEl]);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+    // eslint-disable-next-line
+  }, []);
+
+  const handleResize = useCallback(() => {
+    setWidth(getWindowWidth());
+    setHeight(getWindowHeight());
+  }, []);
+
+  useEffect(() => {
+    if (game) {
+      game.scale.resize(width, height);
+    }
+  }, [width, height, game]);
+
   return <div id="display-el"></div>;
 };
 
