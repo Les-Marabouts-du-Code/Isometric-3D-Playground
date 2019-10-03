@@ -6,6 +6,7 @@ import Progress from '../Progress/Progress';
 import MapSelector from '../MapSelector/MapSelector';
 import CustomDialog from '../CustomDialog/CustomDialog';
 import Visualizator from '../Visualizator/Visualizator';
+import config from '../../config/infos.json';
 
 // const files = [
 //   {
