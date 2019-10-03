@@ -6,11 +6,24 @@ import Progress from '../Progress/Progress';
 import MapSelector from '../MapSelector/MapSelector';
 import CustomDialog from '../CustomDialog/CustomDialog';
 import Visualizator from '../Visualizator/Visualizator';
+import config from '../../config/infos.json';
 
 const files = [
   {
     name: 'Bornholm',
     file: 'bornholm.json'
+  },
+  {
+    name: 'Lyon',
+    file: 'lyon.json'
+  },
+  {
+    name: 'Bretagne',
+    file: 'bretagne.json'
+  },
+  {
+    name: 'Kilimanjaro',
+    file: 'kilimanjaro.json'
   }
 ];
 
