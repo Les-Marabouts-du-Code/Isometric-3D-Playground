@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import './App.scss';
-import CanvasContainer from '../CanvasContainer/CanvasContainer';
+// import CanvasContainer from '../CanvasContainer/CanvasContainer';
 import styled from 'styled-components';
 import Progress from '../Progress/Progress';
 import MapSelector from '../MapSelector/MapSelector';
 import CustomDialog from '../CustomDialog/CustomDialog';
 import Visualizator from '../Visualizator/Visualizator';
 
-const files = [
-  {
-    name: 'Bornholm',
-    file: 'bornholm.json'
-  }
-];
+// const files = [
+//   {
+//     name: 'Bornholm',
+//     file: 'bornholm.json'
+//   }
+// ];
 
 const ButtonToIsometric = styled.button`
   top: 1em;
@@ -26,7 +26,7 @@ const ButtonToMapSelector = styled.button`
 type Props = {};
 
 export default function App(props: Props) {
-  const [activeFileIndex, setActiveFileIndex] = useState(0);
+  // const [activeFileIndex, setActiveFileIndex] = useState(0);
   const [mapData, setMapData] = useState<JSON | undefined>(undefined);
   const [displayMapSelector, setDisplayMapSelector] = useState(false);
   const [mapVisits, setMapVisits] = useState(0);
@@ -84,12 +84,7 @@ export default function App(props: Props) {
           >
             &lt; Map
           </ButtonToMapSelector>
-          <Visualizator />
-          {/* <CanvasContainer
-            key={`mapData${activeFileIndex}`}
-            file={files[activeFileIndex].file}
-            data={mapData}
-          /> */}
+          <Visualizator mapData={mapData} />
         </>
       )}
     </>

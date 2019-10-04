@@ -3,16 +3,21 @@ import Phaser from 'phaser';
 import IsoGame from './lib/IsoGame';
 import { HeightMapScene } from './lib/scenes/heightMapScene';
 
-const Visualizator = () => {
+interface IVisualizatorProps {
+  mapData: JSON | undefined;
+}
+const Visualizator = (props: IVisualizatorProps) => {
   const getWindowWidth = () => window.innerWidth;
   const getWindowHeight = () => window.innerHeight;
 
+  // eslint-disable-next-line
   const [vizualizatorEl, setVisualizatorElement] = useState('display-el');
   const [width, setWidth] = useState(getWindowWidth());
   const [height, setHeight] = useState(getWindowHeight());
 
   const [game, setGame] = useState<IsoGame>();
 
+  // const { mapData } = props;
   useEffect(() => {
     window.addEventListener('resize', handleResize);
     setGame(
