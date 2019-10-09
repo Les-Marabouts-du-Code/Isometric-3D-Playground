@@ -5,13 +5,6 @@ import Visualizator from '../Visualizator/Visualizator';
 import MapMenu from '../MapMenu/MapMenu';
 import config from '../../config/infos.json';
 
-// const files = [
-//   {
-//     name: 'Bornholm',
-//     file: 'bornholm.json'
-//   }
-// ];
-
 const ButtonToIsometric = styled.button`
   top: 1em;
   right: 1em;
@@ -24,9 +17,10 @@ const ButtonToMapSelector = styled.button`
 type Props = {};
 
 export default function App(props: Props) {
+  const [activeFile, setActiveFile] = useState(config[0].file);
   const [activeFileIndex, setActiveFileIndex] = useState(0);
   const [mapData, setMapData] = useState<JSON | undefined>(undefined);
-  const [displayMapSelector, setDisplayMapSelector] = useState(false);
+  const [displayMapMenu, setDisplayMapMenu] = useState(false);
   const [mapVisits, setMapVisits] = useState(0);
 
   const handleMapMenuClick = useCallback(file => {
