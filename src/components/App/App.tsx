@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Visualizator from '../Visualizator/Visualizator';
 import MapMenu from '../MapMenu/MapMenu';
 import config from '../../config/infos.json';
+import OptionSelector from '../OptionSelector/OptionSelector';
 
 const ButtonToIsometric = styled.button`
   top: 1em;
@@ -62,6 +63,7 @@ export default function App(props: Props) {
           >
             &lt; Map
           </ButtonToMapSelector>
+
           <Visualizator mapData={mapData} />
         </>
       )}

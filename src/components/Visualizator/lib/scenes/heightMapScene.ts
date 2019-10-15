@@ -19,7 +19,8 @@ export class HeightMapScene extends Phaser.Scene {
   private params: any;
   private width = 50;
   private size = 30;
-  private land: any[] = [];
+  private land: Cube[] = [];
+  private cubeGroup: Phaser.GameObjects.Group;
   private gridWidth = 100;
   private gridHeight = 100;
   private centerX = window.innerWidth / 4;
@@ -31,10 +32,13 @@ export class HeightMapScene extends Phaser.Scene {
    */
   private lowColor: Color;
   private highColor: Color;
+  private colorChanged: boolean = false;
 
   private cubeList: any[] = [];
 
   public mapData: SpacePoint[] = [];
+  public minHeight: number = 0;
+  public maxHeight: number = 0;
   private mapDataJSON: any = {};
 
   // private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -44,8 +48,25 @@ export class HeightMapScene extends Phaser.Scene {
       key: 'HeightMapScene'
     });
 
-    this.highColor = new Color(255, 255, 128);
-    this.lowColor = new Color(179, 179, 255);
+    const localHighColor = localStorage.getItem('isp_highColor');
+    const localLowColor = localStorage.getItem('isp_lowColor');
+    if (localHighColor) {
+      this.highColor = Color.fromHexa(localHighColor);
+    } else {
+      this.highColor = new Color(255, 255, 128);
+    }
+
+    if (localLowColor) {
+      this.lowColor = Color.fromHexa(localLowColor);
+    } else {
+      this.lowColor = new Color(179, 179, 255);
+    }
+
+    this.cubeGroup = new Phaser.GameObjects.Group(this);
+    // window.addEventListener('storage', () => {
+    //   console.log('Local storage update');
+    //   this.colorChanged = true;
+    // });
   }
 
   init(): void {
@@ -66,11 +87,11 @@ export class HeightMapScene extends Phaser.Scene {
   create(): void {
     const gridDataRaw = new MapDataToGrid(this.mapDataJSON.results);
     const gridData: IMapGridPoint[] = gridDataRaw.getGrid();
-
     const { minHeight, maxHeight } = this.getMinMaxHeight(gridData);
-
+    this.minHeight = minHeight;
+    this.maxHeight = maxHeight;
     const n = gridData.length;
-    let row: any = [];
+    let row: Cube[] = [];
     for (let i = 0; i < n; i++) {
       const singleGridData = gridData[i];
       const { x, y } = singleGridData;
@@ -78,7 +99,7 @@ export class HeightMapScene extends Phaser.Scene {
       const halfDepth = depth / 2;
       const halfWidth = this.width / 2;
       const height = singleGridData.height;
-      const t = (height - minHeight) / (maxHeight - minHeight);
+      const t = (height - this.minHeight) / (this.maxHeight - this.minHeight);
       const color = this.lowColor.lerpTo(this.highColor, t);
 
       var tx = (x - y) * halfWidth * 0.6;
@@ -94,6 +115,8 @@ export class HeightMapScene extends Phaser.Scene {
 
       cube.setDepth(this.centerY + ty);
       row.push(cube);
+      this.land.push(cube);
+      this.cubeGroup.add(cube);
       this.add.existing(cube);
 
       const reverseIndex = n - 1 - i;
@@ -105,7 +128,18 @@ export class HeightMapScene extends Phaser.Scene {
         delay: reverseIndex * 2
       });
     }
-    this.land.push(row);
+  }
+
+  handleColorChange() {
+    this.colorChanged = true;
+    const lowColorString = localStorage.getItem('isp_lowColor');
+    const highColorString = localStorage.getItem('isp_highColor');
+    if (lowColorString) {
+      this.lowColor = Color.fromHexa(lowColorString);
+    }
+    if (highColorString) {
+      this.highColor = Color.fromHexa(highColorString);
+    }
   }
 
   move_camera_by_pointer(o_pointer: Phaser.Input.Pointer) {
@@ -122,7 +156,21 @@ export class HeightMapScene extends Phaser.Scene {
     }
   }
 
+  private updateColor() {
+    for (let i = 0; i < this.land.length; i++) {
+      const cube = this.land[i];
+      const t =
+        (cube.height - this.minHeight) / (this.maxHeight - this.minHeight);
+      const color = this.lowColor.lerpTo(this.highColor, t);
+      cube.colorize(color);
+    }
+  }
+
   update(time: number): void {
-    this.move_camera_by_pointer(this.input.activePointer);
+    // this.move_camera_by_pointer(this.input.activePointer);
+    if (this.colorChanged) {
+      this.updateColor();
+      this.colorChanged = false;
+    }
   }
 }

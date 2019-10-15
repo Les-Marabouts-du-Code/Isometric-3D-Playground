@@ -2,6 +2,8 @@ import React, { useEffect, useState, useCallback } from 'react';
 import Phaser from 'phaser';
 import IsoGame from './lib/IsoGame';
 import { HeightMapScene } from './lib/scenes/heightMapScene';
+import OptionSelector from '../OptionSelector/OptionSelector';
+import { Color, ColorResult } from 'react-color';
 
 interface IVisualizatorProps {
   mapData: JSON | undefined;
@@ -50,7 +52,32 @@ const Visualizator = (props: IVisualizatorProps) => {
     }
   }, [width, height, game]);
 
-  return <div id="display-el"></div>;
+  function handleHighColorChange(color: ColorResult) {
+    if (game) {
+      // console.log(color.hex);
+      localStorage.setItem('isp_highColor', color.hex);
+      game.colorChanged();
+    }
+  }
+  function handleLowColorChange(color: ColorResult) {
+    if (game) {
+      // console.log(color.hex);
+      localStorage.setItem('isp_lowColor', color.hex);
+      game.colorChanged();
+    }
+  }
+
+  return (
+    <>
+      <div id="display-el"></div>
+      {game && (
+        <OptionSelector
+          onHighColorChange={handleHighColorChange}
+          onLowColorChange={handleLowColorChange}
+        />
+      )}
+    </>
+  );
 };
 
 export default Visualizator;
