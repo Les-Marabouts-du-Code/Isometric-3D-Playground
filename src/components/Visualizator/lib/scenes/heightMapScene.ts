@@ -24,7 +24,7 @@ export class HeightMapScene extends Phaser.Scene {
   private gridWidth = 100;
   private gridHeight = 100;
   private centerX = window.innerWidth / 4;
-  private centerY = 100;
+  private centerY = 200;
   private lastPointerCoordinates: { x: number; y: number } = { x: 0, y: 0 };
 
   /**
@@ -43,7 +43,7 @@ export class HeightMapScene extends Phaser.Scene {
 
   // private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
 
-  constructor(inputParams: IIsometric3DGridInputParams) {
+  constructor(data: JSON) {
     super({
       key: 'HeightMapScene'
     });
@@ -67,10 +67,8 @@ export class HeightMapScene extends Phaser.Scene {
     //   console.log('Local storage update');
     //   this.colorChanged = true;
     // });
-  }
 
-  init(): void {
-    this.mapDataJSON = require('../../data.json');
+    this.mapDataJSON = data;
     this.mapData = this.mapDataJSON.results;
   }
 
