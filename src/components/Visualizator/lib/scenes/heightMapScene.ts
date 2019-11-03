@@ -107,7 +107,7 @@ export class HeightMapScene extends Phaser.Scene {
         new Phaser.Geom.Point(this.centerX + tx, this.centerY + ty),
         0,
         this.size,
-        color,
+        this.lowColor,
         this
       );
 
@@ -123,7 +123,11 @@ export class HeightMapScene extends Phaser.Scene {
         height: singleGridData.height,
         ease: 'Sine.easeOut',
         duration: 1500 + 10 * reverseIndex,
-        delay: reverseIndex * 2
+        delay: reverseIndex * 2,
+        onUpdate: args => {
+          const animationProgress = args.elapsed / args.duration;
+          this.updateCubeColor(cube, this.lowColor, color, animationProgress);
+        }
       });
     }
   }
@@ -138,6 +142,19 @@ export class HeightMapScene extends Phaser.Scene {
     if (highColorString) {
       this.highColor = Color.fromHexa(highColorString);
     }
+  }
+
+  updateCubeColor(
+    cube: Cube,
+    startColor: Color,
+    endColor: Color,
+    rate: number
+  ) {
+    if (rate >= 1) {
+      return;
+    }
+    const newColor = startColor.lerpTo(endColor, rate);
+    cube.colorize(newColor);
   }
 
   move_camera_by_pointer(o_pointer: Phaser.Input.Pointer) {
