@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import './App.scss';
-import styled from 'styled-components';
-import Visualizator from '../Visualizator/Visualizator';
-import MapMenu from '../MapMenu/MapMenu';
-import config from '../../config/infos.json';
-import OptionSelector from '../OptionSelector/OptionSelector';
-import { LoadJSON } from '../../data/LoadJSON';
+import React, { useState } from "react";
+import "./App.scss";
+import styled from "styled-components";
+import { Link, Redirect, Route, useHistory } from "react-router-dom";
+import Visualizator from "../Visualizator/Visualizator";
+import MapMenu from "../MapMenu/MapMenu";
+import config from "../../config/infos.json";
+import { LoadJSON } from "../../data/LoadJSON";
 
 const ButtonToIsometric = styled.button`
   top: 1em;
@@ -16,16 +16,21 @@ const ButtonToMapSelector = styled.button`
   left: 1em;
 `;
 
-const pathToFiles = './data/';
+const pathToFiles = "./data/";
+
+const ROUTES = {
+  ROOT: "/",
+  MAP: "/map",
+  ISOMETRIC: "/isometric"
+};
 
 type Props = {};
 
 export default function App(props: Props) {
-  const [activeFile, setActiveFile] = useState();
-  const [activeFileIndex, setActiveFileIndex] = useState(0);
   const [mapData, setMapData] = useState<JSON>();
-  const [displayMapMenu, setDisplayMapMenu] = useState(false);
-  const [mapVisits, setMapVisits] = useState(0);
+  const history = useHistory();
+
+  console.log({ history });
 
   const IfVisualizator = (props: { data: JSON | undefined }) => {
     if (props.data) {
@@ -35,66 +40,43 @@ export default function App(props: Props) {
     }
   };
 
-  const handleMapMenuClick = useCallback(file => {
-    setActiveFile(file);
-    setDisplayMapMenu(false);
-  }, []);
+  const handleMapMenuClick = (file: string) => {
+    const loadJSON = new LoadJSON(pathToFiles + file);
+    loadJSON.load(onLoadComplete, onLoadError);
+  };
 
   const onLoadError = (message: string) => {};
 
   const onLoadComplete = (data: JSON) => {
-    setMapData(prev => {
+    setMapData((prev) => {
       if (prev !== data) {
         return data;
       }
     });
+    history.push(ROUTES.ISOMETRIC);
   };
-
-  useEffect(() => {
-    if (displayMapMenu) {
-      return () => {
-        setMapVisits(mapVisits + 1);
-      };
-    }
-  }, [displayMapMenu, mapVisits]);
-
-  useEffect(() => {
-    if (typeof activeFile !== 'undefined') {
-      const loadJSON = new LoadJSON(pathToFiles + activeFile);
-      setMapData(undefined);
-      loadJSON.load(onLoadComplete, onLoadError);
-    }
-  }, [activeFile]);
 
   return (
     <>
-      {displayMapMenu && (
-        <>
-          <ButtonToIsometric
-            className="switch-view"
-            onClick={() => setDisplayMapMenu(false)}
-          >
+      <Route exact path={ROUTES.ROOT}>
+        <Redirect to={ROUTES.MAP} />
+      </Route>
+      <Route exact path={ROUTES.MAP}>
+        <Link to={ROUTES.ISOMETRIC}>
+          <ButtonToIsometric className="switch-view">
             Isometric 3d View &gt;
           </ButtonToIsometric>
-          <MapMenu
-            areas={config}
-            onClickCallback={handleMapMenuClick}
-          ></MapMenu>
-        </>
-      )}
-      {!displayMapMenu && (
-        <>
-          <ButtonToMapSelector
-            className="switch-view inverted"
-            onClick={() => {
-              setDisplayMapMenu(true);
-            }}
-          >
+        </Link>
+        <MapMenu areas={config} onClickCallback={handleMapMenuClick}></MapMenu>
+      </Route>
+      <Route exact path={ROUTES.ISOMETRIC}>
+        <Link to={ROUTES.MAP}>
+          <ButtonToMapSelector className="switch-view inverted">
             &lt; Map
           </ButtonToMapSelector>
-          <IfVisualizator data={mapData}></IfVisualizator>
-        </>
-      )}
+        </Link>
+        <IfVisualizator data={mapData}></IfVisualizator>
+      </Route>
     </>
   );
 }
