@@ -30,8 +30,6 @@ export default function App(props: Props) {
   const [mapData, setMapData] = useState<JSON>();
   const history = useHistory();
 
-  console.log({ history });
-
   const IfVisualizator = (props: { data: JSON | undefined }) => {
     if (props.data) {
       return <Visualizator mapData={props.data}></Visualizator>;
