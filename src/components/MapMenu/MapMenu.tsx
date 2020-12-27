@@ -1,7 +1,7 @@
-import React from 'react';
-import { TileLayer, Rectangle, PathProps } from 'react-leaflet';
-import { LatLngLiteral, LatLngBoundsExpression } from 'leaflet';
-import CustomMap from '../CustomMap/CustomMap';
+import React from "react";
+import { TileLayer, Rectangle, PathProps } from "react-leaflet";
+import { LatLngLiteral, LatLngBoundsExpression } from "leaflet";
+import CustomMap from "../CustomMap/CustomMap";
 
 interface IMapArea {
   latitude: number;
@@ -40,10 +40,14 @@ export default function MapMenu(props: MapMenuProps) {
   };
 
   const pathProps: PathProps = {
-    fillColor: '#ffffff',
+    fillColor: "#ffffff",
     stroke: true,
     weight: 4,
-    color: '#d03030'
+    color: "#d03030"
+  };
+
+  const onClick = (file: string) => () => {
+    props.onClickCallback(file);
   };
 
   return (
@@ -54,9 +58,7 @@ export default function MapMenu(props: MapMenuProps) {
             key={`rectangle_${index}`}
             bounds={getBoundsFromMapArea(area)}
             {...pathProps}
-            onClick={() => {
-              props.onClickCallback.call(null, area.file);
-            }}
+            onClick={onClick(area.file)}
           ></Rectangle>
         ))}
         <TileLayer
