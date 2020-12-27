@@ -1,4 +1,4 @@
-const HEIGHT = 300;
+const HEIGHT = 100;
 
 class MapDataToGrid {
   /**
@@ -26,7 +26,7 @@ class MapDataToGrid {
     const minElevation = elevations[0];
     const elevationMultiplier = HEIGHT / (maxElevation - minElevation);
     // converting values
-    this.convertedData = rawData.map(object => {
+    this.convertedData = rawData.map((object) => {
       const { x, y, height } = {
         x: longitudes.indexOf(object.longitude),
         y: latitudes.indexOf(object.latitude),
