@@ -27,6 +27,7 @@ export class HeightMapScene extends Phaser.Scene {
   private lowColor: Color;
   private highColor: Color;
   private colorChanged: boolean = false;
+  private waterColor: Color = new Color(35, 72, 207);
 
   public mapData: SpacePoint[] = [];
   public minHeight: number = 0;
@@ -90,7 +91,14 @@ export class HeightMapScene extends Phaser.Scene {
       const halfWidth = this.width / 2;
       const height = singleGridData.height;
       const t = (height - this.minHeight) / (this.maxHeight - this.minHeight);
-      const color = this.lowColor.lerpTo(this.highColor, t);
+
+      let color: Color;
+      if(height === 0) {
+        color = this.waterColor
+      }
+      else {
+        color = this.lowColor.lerpTo(this.highColor, t);
+      }
 
       var tx = (x - y) * halfWidth * 0.6;
       var ty = (x + y) * halfDepth * 0.6;
