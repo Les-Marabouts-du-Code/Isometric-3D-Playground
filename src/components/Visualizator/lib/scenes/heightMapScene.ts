@@ -1,7 +1,6 @@
 import Phaser from 'phaser';
 import { Cube } from '../objects/Cube';
 import Color from '../../../../lib/Isometric3DMap/utils/Color';
-import { IIsometric3DGridInputParams } from '../../../../lib/Isometric3DMap/isometric3dgrid';
 import SpacePoint from '../../../../lib/Isometric3DMap/interfaces/spacePoint.interface';
 import MapDataToGrid from '../../../../lib/Isometric3DMap/mapdata/mapdatatogrid';
 import { IMapGridPoint } from '../../../../lib/Isometric3DMap/interfaces/map-grid-point.interface';

@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   ChromePicker,
-  Color,
-  ColorChangeHandler,
   ColorResult,
-  HuePicker
 } from 'react-color';
 import {
   Paper,
@@ -12,9 +9,7 @@ import {
   Button,
   ButtonBase,
   Typography,
-  Container,
   IconButton,
-  Box
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import clsx from 'clsx';
@@ -70,10 +65,6 @@ const OptionSelector = (props: IOptionSelectorProps) => {
 
   function openMenu() {
     setOpen(true);
-  }
-
-  function toggleMenu() {
-    setOpen(!open);
   }
 
   function toggleHighColorPicker() {

@@ -3,7 +3,6 @@ import Phaser from 'phaser';
 import IsoGame from './lib/IsoGame';
 import { HeightMapScene } from './lib/scenes/heightMapScene';
 import OptionSelector from '../OptionSelector/OptionSelector';
-import { Color, ColorResult } from 'react-color';
 
 interface IVisualizatorProps {
   mapData: JSON;
