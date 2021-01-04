@@ -15,17 +15,12 @@ export class HeightMapScene extends Phaser.Scene {
   /**
    * Map Settings
    */
-  private map: any;
-  private params: any;
   private width = 50;
   private size = 30;
-  private land: Cube[] = [];
   private cubeGroup: Phaser.GameObjects.Group;
-  private gridWidth = 100;
-  private gridHeight = 100;
   private centerX = window.innerWidth / 4;
-  private centerY = 200;
-  private lastPointerCoordinates: { x: number; y: number } = { x: 0, y: 0 };
+  private centerY = window.innerHeight / 4;
+  private lastPointerCoordinates: { x: number; y: number } = { x: NaN, y: NaN };
 
   /**
    * Color Settings
@@ -34,39 +29,37 @@ export class HeightMapScene extends Phaser.Scene {
   private highColor: Color;
   private colorChanged: boolean = false;
 
-  private cubeList: any[] = [];
-
   public mapData: SpacePoint[] = [];
   public minHeight: number = 0;
   public maxHeight: number = 0;
   private mapDataJSON: any = {};
 
-  // private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
-
-  constructor(data: JSON) {
+  constructor({
+    data, 
+    lowColor, 
+    highColor
+  }: {
+    data: JSON, 
+    lowColor: string | null,
+    highColor: string | null
+  }) {
     super({
       key: 'HeightMapScene'
     });
 
-    const localHighColor = localStorage.getItem('isp_highColor');
-    const localLowColor = localStorage.getItem('isp_lowColor');
-    if (localHighColor) {
-      this.highColor = Color.fromHexa(localHighColor);
+    if (highColor) {
+      this.highColor = Color.fromHexa(highColor);
     } else {
       this.highColor = new Color(255, 255, 128);
     }
 
-    if (localLowColor) {
-      this.lowColor = Color.fromHexa(localLowColor);
+    if (lowColor) {
+      this.lowColor = Color.fromHexa(lowColor);
     } else {
       this.lowColor = new Color(179, 179, 255);
     }
 
     this.cubeGroup = new Phaser.GameObjects.Group(this);
-    // window.addEventListener('storage', () => {
-    //   console.log('Local storage update');
-    //   this.colorChanged = true;
-    // });
 
     this.mapDataJSON = data;
     this.mapData = this.mapDataJSON.results;
@@ -113,7 +106,6 @@ export class HeightMapScene extends Phaser.Scene {
 
       cube.setDepth(this.centerY + ty);
       row.push(cube);
-      this.land.push(cube);
       this.cubeGroup.add(cube);
       this.add.existing(cube);
 
@@ -124,24 +116,48 @@ export class HeightMapScene extends Phaser.Scene {
         ease: 'Sine.easeOut',
         duration: 1500 + 10 * reverseIndex,
         delay: reverseIndex * 2,
-        onUpdate: args => {
+        onUpdate: (args) => {
           const animationProgress = args.elapsed / args.duration;
           this.updateCubeColor(cube, this.lowColor, color, animationProgress);
         }
       });
     }
+
+    this.input.on('pointermove', (o_pointer: Phaser.Input.Pointer) => {
+      if (!o_pointer.primaryDown) {
+        return;
+      }
+
+      if (
+        !isNaN(this.lastPointerCoordinates.x) &&
+        !isNaN(this.lastPointerCoordinates.y)
+      ) {
+        this.cameras.main.scrollX -=
+          o_pointer.position.x - this.lastPointerCoordinates.x;
+        this.cameras.main.scrollY -=
+          o_pointer.position.y - this.lastPointerCoordinates.y;
+      }
+
+      const {
+        tagName
+      }: { tagName: string } = o_pointer.manager.activePointer.downElement;
+
+      if (tagName.match(/^canvas$/i)) {
+        this.lastPointerCoordinates.x = o_pointer.position.x;
+        this.lastPointerCoordinates.y = o_pointer.position.y;
+      }
+    });
+
+    this.input.on('pointerup', (o_pointer: Phaser.Input.Pointer) => {
+      this.lastPointerCoordinates.x = NaN;
+      this.lastPointerCoordinates.y = NaN;
+    });
   }
 
-  handleColorChange() {
+  handleColorChange(lowColor: string, highColor: string) {
     this.colorChanged = true;
-    const lowColorString = localStorage.getItem('isp_lowColor');
-    const highColorString = localStorage.getItem('isp_highColor');
-    if (lowColorString) {
-      this.lowColor = Color.fromHexa(lowColorString);
-    }
-    if (highColorString) {
-      this.highColor = Color.fromHexa(highColorString);
-    }
+    this.lowColor = Color.fromHexa(lowColor);
+    this.highColor = Color.fromHexa(highColor);
   }
 
   updateCubeColor(
@@ -157,32 +173,17 @@ export class HeightMapScene extends Phaser.Scene {
     cube.colorize(newColor);
   }
 
-  move_camera_by_pointer(o_pointer: Phaser.Input.Pointer) {
-    if (!o_pointer.upTime) {
-      return;
-    }
-    if (o_pointer.primaryDown && this.cameras.main) {
-      const { x, y } = this.lastPointerCoordinates;
-      this.cameras.main.x += o_pointer.position.x - x;
-      this.cameras.main.y += o_pointer.position.y - y;
-
-      this.lastPointerCoordinates.x = o_pointer.position.x;
-      this.lastPointerCoordinates.y = o_pointer.position.y;
-    }
-  }
-
   private updateColor() {
-    for (let i = 0; i < this.land.length; i++) {
-      const cube = this.land[i];
-      const t =
+    this.cubeGroup.children.iterate((child) => {
+      const cube: Cube = child as Cube;
+      const delta =
         (cube.height - this.minHeight) / (this.maxHeight - this.minHeight);
-      const color = this.lowColor.lerpTo(this.highColor, t);
+      const color = this.lowColor.lerpTo(this.highColor, delta);
       cube.colorize(color);
-    }
+    });
   }
 
   update(time: number): void {
-    // this.move_camera_by_pointer(this.input.activePointer);
     if (this.colorChanged) {
       this.updateColor();
       this.colorChanged = false;

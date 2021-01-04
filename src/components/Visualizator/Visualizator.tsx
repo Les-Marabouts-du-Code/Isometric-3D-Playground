@@ -17,11 +17,17 @@ const Visualizator = (props: IVisualizatorProps) => {
   const [width, setWidth] = useState(getWindowWidth());
   const [height, setHeight] = useState(getWindowHeight());
 
+  const localHighColor = localStorage.getItem('isp_highColor');
+  const localLowColor = localStorage.getItem('isp_lowColor');
   const [game, setGame] = useState<IsoGame>();
 
-  const scene = new HeightMapScene(props.mapData);
+  // TODO: { data, lowColor, highColor }
+  const scene = new HeightMapScene({
+    data: props.mapData, 
+    lowColor: localLowColor, 
+    highColor: localHighColor
+  });
 
-  // const { mapData } = props;
   useEffect(() => {
     window.addEventListener('resize', handleResize);
 
@@ -38,7 +44,6 @@ const Visualizator = (props: IVisualizatorProps) => {
     setGame(
       new IsoGame({
         parent: vizualizatorEl,
-        //scene: [HeightMapScene],
         scene,
         scale: {
           parent: vizualizatorEl,
@@ -63,18 +68,9 @@ const Visualizator = (props: IVisualizatorProps) => {
     }
   }, [width, height, game]);
 
-  function handleHighColorChange(color: ColorResult) {
-    if (game) {
-      // console.log(color.hex);
-      localStorage.setItem('isp_highColor', color.hex);
-      game.colorChanged();
-    }
-  }
-  function handleLowColorChange(color: ColorResult) {
-    if (game) {
-      // console.log(color.hex);
-      localStorage.setItem('isp_lowColor', color.hex);
-      game.colorChanged();
+  function handleColorChange(lowColor: string, highColor: string) {
+    if(game) {
+      game.colorChanged(lowColor, highColor)
     }
   }
 
@@ -83,8 +79,7 @@ const Visualizator = (props: IVisualizatorProps) => {
       <div id="display-el"></div>
       {game && (
         <OptionSelector
-          onHighColorChange={handleHighColorChange}
-          onLowColorChange={handleLowColorChange}
+          onColorChange={handleColorChange}
         />
       )}
     </>

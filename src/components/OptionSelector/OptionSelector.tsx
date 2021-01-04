@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ChromePicker,
   Color,
   ColorChangeHandler,
+  ColorResult,
   HuePicker
 } from 'react-color';
 import {
@@ -17,9 +18,9 @@ import {
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import clsx from 'clsx';
+
 export interface IOptionSelectorProps {
-  onHighColorChange: ColorChangeHandler;
-  onLowColorChange: ColorChangeHandler;
+  onColorChange: (lowColor: string, highColor: string) => void;
 }
 
 const useStyles = makeStyles({
@@ -63,6 +64,10 @@ const OptionSelector = (props: IOptionSelectorProps) => {
   const [open, setOpen] = useState(false);
   const [highColorPickerOpen, setHighColorPickerOpen] = useState(false);
   const [lowColorPickerOpen, setLowColorPickerOpen] = useState(false);
+
+  const [lowColor, setLowColor] = useState<string>(getLowColor());
+  const [highColor, setHighColor] = useState<string>(getHighColor());
+
   function openMenu() {
     setOpen(true);
   }
@@ -81,21 +86,31 @@ const OptionSelector = (props: IOptionSelectorProps) => {
     setOpen(false);
   }
   function getHighColor(): string {
-    const color = localStorage.getItem('isp_highColor');
-    if (color) {
-      return color;
-    } else {
-      return '#fff';
-    }
+    return localStorage.getItem('isp_highColor') || '#fff';
   }
   function getLowColor(): string {
-    const color = localStorage.getItem('isp_lowColor');
-    if (color) {
-      return color;
-    } else {
-      return '#fff';
-    }
+    return localStorage.getItem('isp_lowColor') || '#fff';
   }
+
+  function onHighColorChangeComplete(color: ColorResult) {
+    setHighColor(color.hex);
+  }
+
+  function onLowColorChangeComplete(color: ColorResult) {
+    setLowColor(color.hex);
+  }
+
+  // TODO: store 1 object containing both colors
+  useEffect(() => {
+    localStorage.setItem('isp_highColor', highColor);
+    props.onColorChange(lowColor, highColor);
+  }, [highColor]);
+
+  useEffect(() => {
+    localStorage.setItem('isp_lowColor', lowColor);
+    props.onColorChange(lowColor, highColor);
+  }, [lowColor]);
+
   return (
     <Paper
       className={clsx(
@@ -121,8 +136,8 @@ const OptionSelector = (props: IOptionSelectorProps) => {
                   onClick={toggleHighColorPicker}
                 />
                 <ChromePicker
-                  onChangeComplete={props.onHighColorChange}
-                  color={getHighColor()}
+                  onChangeComplete={onHighColorChangeComplete}
+                  color={highColor}
                 />
               </div>
             ) : null}
@@ -139,16 +154,15 @@ const OptionSelector = (props: IOptionSelectorProps) => {
               <div className={classes.popOver}>
                 <div className={classes.cover} onClick={toggleLowColorPicker} />
                 <ChromePicker
-                  onChangeComplete={props.onLowColorChange}
-                  color={getLowColor()}
+                  onChangeComplete={onLowColorChangeComplete}
+                  color={lowColor}
                 />
               </div>
             ) : null}
           </>
           <IconButton
             aria-label="delete"
-            onClick={event => {
-              event.stopPropagation();
+            onClick={(event) => {
               closeMenu();
             }}
           >
@@ -160,8 +174,7 @@ const OptionSelector = (props: IOptionSelectorProps) => {
           focusRipple
           // className={classes.optionSelectorClosed}
           disableRipple={open}
-          onClick={event => {
-            event.stopPropagation();
+          onClick={(event) => {
             openMenu();
           }}
           className={classes.menuButton}
