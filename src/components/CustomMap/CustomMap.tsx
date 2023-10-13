@@ -1,4 +1,8 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useEffect
+} from 'react';
 import { Map, MapProps } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -14,7 +18,7 @@ L.Marker.prototype.options.icon = DefaultIcon;
 
 const DEFAULT_MAP_HEIGHT = 600;
 
-export default function CustomMap(props: Partial<MapProps>) {
+const CustomMap = React.forwardRef<Map, MapProps>((props, ref) => {
   const [mapHeight, setMapHeight] = useState(DEFAULT_MAP_HEIGHT);
 
   const handleResize = useCallback(() => setMapHeight(window.innerHeight), []);
@@ -29,8 +33,15 @@ export default function CustomMap(props: Partial<MapProps>) {
   }, [handleResize]);
 
   return (
-    <Map {...props} style={{ width: '100%', height: `${mapHeight}px` }}>
-      {props.children}
-    </Map>
+      <Map
+        {...props}
+        preferCanvas
+        style={{ width: '100%', height: `${mapHeight}px` }}
+        ref={ref}
+      >
+        {props.children}
+      </Map>
   );
-}
+})
+
+export default CustomMap;

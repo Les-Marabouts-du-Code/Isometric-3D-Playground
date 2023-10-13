@@ -3,13 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "homepage": ".",
+  "proxy": "http://localhost:8080",
   "dependencies": {
     "@material-ui/core": "^4.4.0",
     "@material-ui/icons": "^4.5.1",
+    "canvas": "^2.6.1",
     "classnames": "^2.2.6",
     "clsx": "^1.0.4",
     "gsap": "^2.1.2",
     "leaflet": "^1.5.1",
+    "leaflet-image": "^0.4.0",
     "mobile-device-detect": "^0.2.3",
     "phaser": "3.19.0",
     "phaser3-plugin-isometric": "^0.0.7",
@@ -23,13 +26,19 @@
     "styled-components": "^4.3.2"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "BROWSER='brave-browser' react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": [
+      "react-app",
+      "react-app/jest",
+      "plugin:@typescript-eslint/recommended",
+      "prettier/@typescript-eslint",
+      "plugin:prettier/recommended"
+    ]
   },
   "browserslist": [
     ">0.2%",
